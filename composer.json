@@ -1,0 +1,21 @@
+{
+    "name": "virgo/message-launch",
+    "description": "message-launch",
+    "type": "1",
+    "require": {
+        "php": ">=7.2"
+    },
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "seirios",
+            "email": "237472989@qq.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MessageLaunch\\" : "src/MessageLaunch"
+        }
+    },
+    "minimum-stability": "dev"
+}
