@@ -39,11 +39,24 @@ class JuHeYun extends Connector implements Launch
             'rt' => 'json'
         ];
 
-        return $this->request($this->baseUrl, $param,'GET',[]);
+        return $this->request($this->baseUrl, $param, 'GET', []);
     }
 
-    public function sends(array $phone, string $message)
+    /**
+     * @throws GuzzleException
+     */
+    public function sends(array $phone, string $message): Response
     {
-        // TODO: Implement sends() method.
+        $param = [
+            'action' => 'send',
+            'account' => $this->account,
+            'password' => $this->password,
+            'mobile' => implode(',', $phone),
+            'content' => urlencode($message),
+            'extno' => $this->extNo,
+            'rt' => 'json'
+        ];
+
+        return $this->request($this->baseUrl, $param, 'GET', []);
     }
 }

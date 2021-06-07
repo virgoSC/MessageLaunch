@@ -12,7 +12,7 @@ use MessageLaunch\BaseInterface\Response;
 /**
  * Class MessageLaunch
  * @method Response send(string $phone, string $message)
- * @method sends(array $phones, string $message)
+ * @method Response sends(array $phones, string $message)
  * @package MessageLaunch
  */
 class MessageLaunch
