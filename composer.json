@@ -3,7 +3,9 @@
     "description": "message-launch",
     "type": "1",
     "require": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "guzzlehttp/guzzle": "7.4.x-dev",
+        "ext-json": "*"
     },
     "license": "Apache-2.0",
     "authors": [
@@ -14,7 +16,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "MessageLaunch\\" : "src/MessageLaunch"
+            "MessageLaunch\\" : "MessageLaunch"
         }
     },
     "minimum-stability": "dev"
