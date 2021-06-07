@@ -13,6 +13,8 @@ use MessageLaunch\BaseInterface\Response;
  * Class MessageLaunch
  * @method Response send(string $phone, string $message)
  * @method Response sends(array $phones, string $message)
+ * @method Response sendsPhoneSelf(array $phones)
+ * @method Response balance()
  * @package MessageLaunch
  */
 class MessageLaunch

@@ -27,7 +27,20 @@ $send = new \MessageLaunch\MessageLaunch('JuHeYun', [
     'async' => false //是否异步
 ]);
 
+//单发
 $response = $send->send('1821*******', '测试testCode.//.1-' . date('Y-m-d H:i:s'));
+
+//群发
+$response = $send->sends(['1821', '1822'], '测试testCode.//.1-' . date('Y-m-d H:i:s'));
+
+//内容独立
+$response = $send->sendsPhoneSelf([
+    '1821' => 'tt1',
+    '1822' => 'tt2'
+]);
+
+//余额
+$response = $send->balance();
 
 var_dump($response->getCode().$response->getBody());
 
