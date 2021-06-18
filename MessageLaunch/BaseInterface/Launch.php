@@ -15,7 +15,7 @@ interface Launch
     public function sends(array $phone, string $message) :Response;
 
     //群发检查
-    public function sendsCheck(array $phones) :Response;
+    public function sendsCheck(array $phones);
 
     //群发 号码内容分离
     public function sendsPhoneSelf(array $phones) :Response;

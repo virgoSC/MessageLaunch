@@ -34,7 +34,7 @@ class JuHeYun extends Connector implements Launch
             'account' => $this->account,
             'password' => $this->password,
             'mobile' => $phone,
-            'content' => urlencode($message),
+            'content' => $message,
             'extno' => $this->extNo,
             'rt' => 'json'
         ];
@@ -54,7 +54,7 @@ class JuHeYun extends Connector implements Launch
             'account' => $this->account,
             'password' => $this->password,
             'mobile' => implode(',', $phone),
-            'content' => urlencode($message),
+            'content' => $message,
             'extno' => $this->extNo,
             'rt' => 'json'
         ];
@@ -87,7 +87,7 @@ class JuHeYun extends Connector implements Launch
         return $this->request($this->baseUrl, $param, 'GET', []);
     }
 
-    public function sendsCheck(array $phones): void
+    public function sendsCheck(array $phones)
     {
         if (count($phones) > $this->massNumber) {
             throw new \RuntimeException('count phones > ' . $this->massNumber);
