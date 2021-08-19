@@ -82,6 +82,8 @@ class Connector extends Config
         }
         if (strtoupper($this->format) == 'JSON') {
             $options['json'] = json_encode($param);
+        } else {
+            $options['form_params'] = $param;
         }
 
         return $options;
