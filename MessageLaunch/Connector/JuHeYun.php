@@ -123,9 +123,6 @@ class JuHeYun extends Connector implements Launch
 
         $result = $Response->getBody();
 
-        var_dump($param);
-        var_dump($result);
-
         if ($Response->getCode() != '200') {
             $Response->setErrorNo($Response->getBody());
             return $Response;
@@ -143,7 +140,7 @@ class JuHeYun extends Connector implements Launch
         if (isset($param['action']) and $param['action'] == 'balance') {
             $Response->setSuccess(true);
             $Response->setResult($result['balance']);
-            return  $Response;
+            return $Response;
         }
 
         if ($status !== '0') {
@@ -157,6 +154,8 @@ class JuHeYun extends Connector implements Launch
         $list = $result['list'] ?? '';
         if ($list) {
             $Response->setSuccess(true);
+            $list = array_column($list, 'mid');
+            $list = implode(',', $list);
             $Response->setResult($list);
         }
 
