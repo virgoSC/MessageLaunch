@@ -26,6 +26,8 @@ $send = new \MessageLaunch\MessageLaunch('JuHeYun', [
     'massNumber' => '500',  //群发限制
     'format' => 'form_params', //post 提交格式
     'async' => false //是否异步
+    'tag' =>'【XX】',
+    'tag_pos' => 'before' //before
 ]);
 
 //漫道
@@ -37,25 +39,36 @@ $send = new \MessageLaunch\MessageLaunch('ManDao', [
     'sign' =>'aaa',
     //
     'massNumber' => '500',
+    'tag' =>'【XX】',
+    'tag_pos' => 'after' //before
+    
 ]);
 
 //单发
 $response = $send->send('1821*******', '测试testCode.//.1-' . date('Y-m-d H:i:s'));
-var_dump($response->getCode().'--->'.$response->getBody());
+var_dump($response->getSuccess());
+var_dump($response->getResult());
+exit;
 
 //群发
 $response = $send->sends(['1821', '1822'], '测试testCode.//.1-' . date('Y-m-d H:i:s'));
-var_dump($response->getCode().'--->'.$response->getBody());
+var_dump($response->getSuccess());
+var_dump($response->getResult());
+exit;
 
 //内容独立
 $response = $send->sendsPhoneSelf([
     '1821' => 'tt1',
     '1822' => 'tt2'
 ]);
-var_dump($response->getCode().'--->'.$response->getBody());
+var_dump($response->getSuccess());
+var_dump($response->getResult());
+exit;
 
 //余额
 $response = $send->balance();
-var_dump($response->getCode().'--->'.$response->getBody());
+var_dump($response->getSuccess());
+var_dump($response->getResult());
+exit;
 
 ```

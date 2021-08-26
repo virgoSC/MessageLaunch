@@ -23,7 +23,7 @@ class Connector extends Config
         $options = array_intersect_key($options, $vars);
 
         foreach ($options as $option => $value) {
-            $this->$option = $value;
+            $this->$option = trim($value);
         }
     }
 

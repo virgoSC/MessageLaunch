@@ -15,6 +15,12 @@ class Response
 
     private $header;
 
+    private $success = false;
+
+    private $result;
+
+    private $errorNo;
+
     public function __construct($code, $body, $header)
     {
         $this->code = $code;
@@ -42,4 +48,49 @@ class Response
     {
         return $this->header;
     }
+
+    public function setResult($result): Response
+    {
+        $this->result = $result;
+        return $this;
+    }
+
+    public function getResult()
+    {
+        return $this->result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getSuccess(): bool
+    {
+        return $this->success;
+    }
+
+    /**
+     * @param bool $success
+     */
+    public function setSuccess(bool $success): void
+    {
+        $this->success = $success;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getErrorNo()
+    {
+        return $this->errorNo;
+    }
+
+    /**
+     * @param mixed $errorNo
+     */
+    public function setErrorNo($errorNo): Response
+    {
+        $this->errorNo = $errorNo;
+        return $this;
+    }
+
 }

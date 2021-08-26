@@ -6,7 +6,8 @@
         "php": ">=7.2",
         "guzzlehttp/guzzle": "7.4.x-dev",
         "ext-json": "*",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "ext-simplexml": "*"
     },
     "license": "Apache-2.0",
     "authors": [

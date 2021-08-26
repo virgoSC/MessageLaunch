@@ -13,14 +13,11 @@ use MessageLaunch\BaseInterface\Response;
 
 class ManDao extends Connector implements Launch
 {
-
     protected $sn;
 
     protected $pwd;
 
     protected $Ext;
-
-    protected $tag;
 
     protected $baseUrl;
 
@@ -31,11 +28,13 @@ class ManDao extends Connector implements Launch
      */
     public function send(string $phone, string $message): Response
     {
+        $message = $this->mergeTag($message);
+
         $param = [
             'sn' => $this->sn,
             'pwd' => strtoupper(md5($this->sn . $this->pwd)),
             'mobile' => $phone,
-            'Content' => mb_convert_encoding($message . $this->tag, "gb2312", "UTF-8"),
+            'Content' => mb_convert_encoding($message, "gb2312", "UTF-8"),
             'Ext' => $this->Ext,
             'Stime' => '',
             'Rrid' => ''
@@ -51,11 +50,13 @@ class ManDao extends Connector implements Launch
     {
         $this->sendsCheck($phone);
 
+        $message = $this->mergeTag($message);
+
         $param = [
             'sn' => $this->sn,
             'pwd' => strtoupper(md5($this->sn . $this->pwd)),
             'mobile' => implode(',', $phone),
-            'Content' => mb_convert_encoding($message . $this->tag, "gb2312", "UTF-8"),
+            'Content' => mb_convert_encoding($message, "gb2312", "UTF-8"),
             'Ext' => $this->Ext,
             'Stime' => '',
             'Rrid' => ''
@@ -69,9 +70,10 @@ class ManDao extends Connector implements Launch
      */
     public function sendsPhoneSelf(array $phones): Response
     {
-        $phones = array_map(function ($a) {
-            return mb_convert_encoding($a . $this->tag, "gb2312", "UTF-8");
-        },$phones);
+        $phones = array_map(function ($message) {
+            $message = $this->mergeTag($message);
+            return mb_convert_encoding($message, "gb2312", "UTF-8");
+        }, $phones);
 
         $_phone = implode(',', array_keys($phones));
 
@@ -110,5 +112,36 @@ class ManDao extends Connector implements Launch
         ];
 
         return $this->request($this->baseUrl . '/balance', $param);
+    }
+
+    protected function request(string $url, array $param, string $method = 'GET', array $header = []): Response
+    {
+        $Response = parent::request($url, $param, $method, $header);
+
+        $result = $Response->getBody();
+
+        if ($Response->getCode() != '200') {
+            return $Response;
+        }
+
+        $result = simplexml_load_string($result);
+        if (!$result) {
+            $Response->setErrorNo($result);
+            return $Response;
+        }
+        $result = $result[0] ?? '';
+        $Response->setResult($result);
+
+        if ($url == $this->baseUrl . '/balance') {
+            $Response->setSuccess(true);
+        } else {
+            if (substr($result, 0, 1) == '-') {
+                $Response->setSuccess(false);
+                $Response->setErrorNo($result);
+            } else {
+                $Response->setSuccess(true);
+            }
+        }
+        return $Response;
     }
 }

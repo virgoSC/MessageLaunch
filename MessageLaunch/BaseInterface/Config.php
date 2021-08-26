@@ -19,9 +19,30 @@ class Config
      */
     protected $format = 'form_params';
 
+
     /**
      * 是否异步
      * @var bool $async
      */
     protected $async = false;
+
+    /**
+     * tag
+     * @var string $tag
+     */
+    protected $tag;
+    /**
+     * tag位置
+     * @var string $tag_pos
+     */
+    protected $tag_pos = 'after';
+
+    protected function mergeTag($message): string
+    {
+        if ($this->tag_pos == 'after') {
+            return $message . $this->tag;
+        } else {
+            return $this->tag . $message;
+        }
+    }
 }

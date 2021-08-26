@@ -29,6 +29,8 @@ class JuHeYun extends Connector implements Launch
      */
     public function send(string $phone, string $message): Response
     {
+        $message = $this->mergeTag($message);
+
         $param = [
             'action' => 'send',
             'account' => $this->account,
@@ -38,6 +40,7 @@ class JuHeYun extends Connector implements Launch
             'extno' => $this->extNo,
             'rt' => 'json'
         ];
+        var_dump($param);
 
         return $this->request($this->baseUrl, $param, 'GET', []);
     }
@@ -48,6 +51,8 @@ class JuHeYun extends Connector implements Launch
     public function sends(array $phone, string $message): Response
     {
         $this->sendsCheck($phone);
+
+        $message = $this->mergeTag($message);
 
         $param = [
             'action' => 'send',
@@ -69,10 +74,13 @@ class JuHeYun extends Connector implements Launch
     {
         $content = [];
 
-        foreach ($phones as $k=> $v) {
-            $content[] = $k.'#'.$v;
+        foreach ($phones as $k => $v) {
+            $content[] = $k . '#' . $v;
         }
-        $content = implode("\r\n",$content);
+        $content = array_filter($content, 'self::mergeTag');
+
+        $content = implode("\r\n", $content);
+
         $this->sendsCheck($phones);
 
         $param = [
@@ -107,5 +115,51 @@ class JuHeYun extends Connector implements Launch
         ];
 
         return $this->request($this->baseUrl, $param, 'GET', []);
+    }
+
+    protected function request(string $url, array $param, string $method = 'GET', array $header = []): Response
+    {
+        $Response = parent::request($url, $param, $method, $header);
+
+        $result = $Response->getBody();
+
+        var_dump($param);
+        var_dump($result);
+
+        if ($Response->getCode() != '200') {
+            $Response->setErrorNo($Response->getBody());
+            return $Response;
+        }
+
+        $result = json_decode($result, true);
+
+        if (!isset($result['status'])) {
+            $Response->setErrorNo($result);
+            return $Response;
+        }
+
+        $status = $result['status'];
+
+        if (isset($param['action']) and $param['action'] == 'balance') {
+            $Response->setSuccess(true);
+            $Response->setResult($result['balance']);
+            return  $Response;
+        }
+
+        if ($status !== '0') {
+            $Response->setErrorNo($status);
+            return $Response;
+        }
+        //成功
+        $Response->setResult($result);
+
+
+        $list = $result['list'] ?? '';
+        if ($list) {
+            $Response->setSuccess(true);
+            $Response->setResult($list);
+        }
+
+        return $Response;
     }
 }
