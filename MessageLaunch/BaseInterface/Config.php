@@ -3,6 +3,7 @@
  * @author seirios-ls
  * 2021/6/7
  */
+
 namespace MessageLaunch\BaseInterface;
 
 class Config
@@ -36,6 +37,16 @@ class Config
      * @var string $tag_pos
      */
     protected $tag_pos = 'after';
+
+    public function getTag(): string
+    {
+        return $this->tag;
+    }
+
+    public function getTagPos(): string
+    {
+        return $this->tag_pos;
+    }
 
     protected function mergeTag($message): string
     {

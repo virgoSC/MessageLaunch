@@ -40,7 +40,6 @@ class JuHeYun extends Connector implements Launch
             'extno' => $this->extNo,
             'rt' => 'json'
         ];
-        var_dump($param);
 
         return $this->request($this->baseUrl, $param, 'GET', []);
     }
@@ -149,7 +148,6 @@ class JuHeYun extends Connector implements Launch
         }
         //成功
         $Response->setResult($result);
-
 
         $list = $result['list'] ?? '';
         if ($list) {
