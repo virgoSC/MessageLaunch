@@ -20,7 +20,6 @@ class Config
      */
     protected $format = 'form_params';
 
-
     /**
      * 是否异步
      * @var bool $async
