@@ -29,14 +29,14 @@ class JuHeYun extends Connector implements Launch
      */
     public function send(string $phone, string $message): Response
     {
-        $message = $this->mergeTag($message);
+        $this->mergeTag($message);
 
         $param = [
             'action' => 'send',
             'account' => $this->account,
             'password' => $this->password,
             'mobile' => $phone,
-            'content' => $message,
+            'content' => $this->message,
             'extno' => $this->extNo,
             'rt' => 'json'
         ];
@@ -51,14 +51,14 @@ class JuHeYun extends Connector implements Launch
     {
         $this->sendsCheck($phone);
 
-        $message = $this->mergeTag($message);
+        $this->mergeTag($message);
 
         $param = [
             'action' => 'send',
             'account' => $this->account,
             'password' => $this->password,
             'mobile' => implode(',', $phone),
-            'content' => $message,
+            'content' => $this->message,
             'extno' => $this->extNo,
             'rt' => 'json'
         ];

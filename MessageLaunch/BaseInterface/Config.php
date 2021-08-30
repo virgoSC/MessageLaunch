@@ -37,6 +37,8 @@ class Config
      */
     protected $tag_pos = 'after';
 
+    protected $message;
+
     public function getTag(): string
     {
         return $this->tag;
@@ -47,12 +49,18 @@ class Config
         return $this->tag_pos;
     }
 
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
     protected function mergeTag($message): string
     {
         if ($this->tag_pos == 'after') {
-            return $message . $this->tag;
+            $this->message = $message . $this->tag;
         } else {
-            return $this->tag . $message;
+            $this->message = $this->tag . $message;
         }
+        return  $this->message;
     }
 }

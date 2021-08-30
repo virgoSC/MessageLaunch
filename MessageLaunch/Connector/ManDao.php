@@ -28,13 +28,13 @@ class ManDao extends Connector implements Launch
      */
     public function send(string $phone, string $message): Response
     {
-        $message = $this->mergeTag($message);
+        $this->mergeTag($message);
 
         $param = [
             'sn' => $this->sn,
             'pwd' => strtoupper(md5($this->sn . $this->pwd)),
             'mobile' => $phone,
-            'Content' => mb_convert_encoding($message, "gb2312", "UTF-8"),
+            'Content' => mb_convert_encoding($this->message, "gb2312", "UTF-8"),
             'Ext' => $this->Ext,
             'Stime' => '',
             'Rrid' => ''
@@ -50,13 +50,13 @@ class ManDao extends Connector implements Launch
     {
         $this->sendsCheck($phone);
 
-        $message = $this->mergeTag($message);
+        $this->mergeTag($message);
 
         $param = [
             'sn' => $this->sn,
             'pwd' => strtoupper(md5($this->sn . $this->pwd)),
             'mobile' => implode(',', $phone),
-            'Content' => mb_convert_encoding($message, "gb2312", "UTF-8"),
+            'Content' => mb_convert_encoding($this->message, "gb2312", "UTF-8"),
             'Ext' => $this->Ext,
             'Stime' => '',
             'Rrid' => ''
@@ -129,6 +129,7 @@ class ManDao extends Connector implements Launch
             $Response->setErrorNo($result);
             return $Response;
         }
+        $result = (array)$result;
         $result = $result[0] ?? '';
         $Response->setResult($result);
 
