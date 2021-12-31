@@ -11,7 +11,6 @@ use MessageLaunch\BaseInterface\Response;
 
 /**
  * Class MessageLaunch
- * @method Response send(string $phone, string $message)
  * @method Response sends(array $phones, string $message)
  * @method Response sendsPhoneSelf(array $phones)
  * @method Response balance()
@@ -20,27 +19,42 @@ use MessageLaunch\BaseInterface\Response;
 class MessageLaunch
 {
     /**
-     * @var Connector $instance
+     * @var array $instance
      */
     private $instance;
 
     /**
-     * MessageLaunch constructor.
+     * MessageLaunch constructor
      */
-    public function __construct(string $instance, array $options = [])
+    public function append(string $instance, string $name, array $options = [])
     {
-        $this->setInstance($instance,$options);
+
+        if (!key_exists($name, $this->instance)) {
+            $this->setInstance($instance, $name, $options);
+        }
     }
 
-    private function setInstance(string $name, array $options = [])
+    private function setInstance(string $instance, string $name, array $options = [])
     {
-        $className = "MessageLaunch\\Connector\\" . $name;
+        $className = "MessageLaunch\\Connector\\" . $instance;
 
         if (!class_exists($className)) {
-            throw new \UnexpectedValueException("$name className not fund");
+            return;
         }
-        $this->instance = new $className();
-        $this->instance->setOptions($options);
+        $class = new $className();
+        $class->setOptions($options);
+
+        $this->instance[$name] = $class;
+    }
+
+    public function send(string $phone, string $message, string $instance = '')
+    {
+        $key = array_keys($this->instance);
+
+        if (!$instance or !key_exists($instance, $key)) {
+            $instance = $key[0];
+        }
+        return $this->instance[$instance]->send($phone, $message);
     }
 
     public function __call($method, $param)
