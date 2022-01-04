@@ -17,89 +17,79 @@ class RuanWei extends Connector implements Launch
 
     protected $password;
 
-    protected $Ext;
+    protected $extno;
 
     protected $baseUrl;
 
-    protected $format = '';
+    protected $format;
 
     /**
      * @throws GuzzleException
      */
-    public function send(string $phone, string $message): Response
+    public function send(string $phone, string $message, array $extra = []): Response
     {
         $this->mergeTag($message);
 
         $param = [
-            'action' => 'p2p',
+            'action' => 'send',
             'account' => $this->account,
-            'password' => md5($this->sn . $this->pwd),
             'mobile' => $phone,
-            'Content' => mb_convert_encoding($this->message, "gb2312", "UTF-8"),
-            'Ext' => $this->Ext,
-            'Stime' => '',
-            'Rrid' => ''
+            'content' => $this->message,
+            'password' => $this->password,
+            'extno' => $extra['extno'] ?? $this->extno,
+            'rt' => 'json',
         ];
 
-        return $this->request($this->baseUrl . '/mt', $param, 'POST');
+        return $this->request($this->baseUrl . '?action=send', $param, 'POST');
     }
 
     /**
      * @throws GuzzleException
      */
-    public function sends(array $phone, string $message): Response
+    public function sends(array $phone, string $message, array $extra = []): Response
     {
         $this->sendsCheck($phone);
 
         $this->mergeTag($message);
 
         $param = [
-            'sn' => $this->sn,
-            'pwd' => strtoupper(md5($this->sn . $this->pwd)),
+            'action' => 'send',
+            'account' => $this->account,
             'mobile' => implode(',', $phone),
-            'Content' => mb_convert_encoding($this->message, "gb2312", "UTF-8"),
-            'Ext' => $this->Ext,
-            'Stime' => '',
-            'Rrid' => ''
+            'content' => $this->message,
+            'password' => $this->password,
+            'extno' => $extra['extno'] ?? $this->extno,
+            'rt' => 'json',
         ];
 
-        return $this->request($this->baseUrl . '/mt', $param, 'POST');
+        return $this->request($this->baseUrl . '?action=send', $param, 'POST');
     }
 
     /**
      * @throws GuzzleException
      */
-    public function sendsPhoneSelf(array $phones): Response
+    public function sendsPhoneSelf(array $phones, array $extra = []): Response
     {
-        $phones = array_map(function ($message) {
-            $message = $this->mergeTag($message);
-            return mb_convert_encoding($message, "gb2312", "UTF-8");
-        }, $phones);
+        $toContent = [];
+        foreach ($phones as $phone => $content) {
+            $content = $this->mergeTag($content);
+            $toContent[] = $phone . '#' . $content;
+        }
 
-        $_phone = implode(',', array_keys($phones));
-
-        $_content = implode(",", $phones);
+        $toContent = implode("\r\n", $toContent);
 
         $this->sendsCheck($phones);
 
         $param = [
-            'sn' => $this->sn,
-            'pwd' => strtoupper(md5($this->sn . $this->pwd)),
-            'mobile' => $_phone,
-            'Content' => $_content,
-            'Ext' => $this->Ext,
-            'Stime' => '',
-            'Rrid' => ''
+            'action' => 'p2p',
+            'account' => $this->account,
+            'password' => $this->password,
+            'mobileContentList' => $toContent,
+            'extno' => $extra['extno'] ?? $this->extno,
+            'rt' => 'json',
         ];
 
-        return $this->request($this->baseUrl . '/gxmt', $param, 'POST');
-    }
-
-    public function sendsCheck(array $phones)
-    {
-        if (count($phones) > $this->massNumber) {
-            throw new \RuntimeException('count phones > ' . $this->massNumber);
-        }
+        return $this->request($this->baseUrl . '?action=p2p', $param, 'POST');
     }
 
     /**
@@ -108,11 +98,20 @@ class RuanWei extends Connector implements Launch
     public function balance(): Response
     {
         $param = [
-            'sn' => $this->sn,
-            'pwd' => strtoupper(md5($this->sn . $this->pwd)),
+            'action' => 'overage',
+            'account' => $this->account,
+            'password' => $this->password,
+            'rt' => 'json',
         ];
 
-        return $this->request($this->baseUrl . '/balance', $param);
+        return $this->request($this->baseUrl, $param);
+    }
+
+    public function sendsCheck(array $phones)
+    {
+        if (count($phones) > $this->massNumber) {
+            throw new \RuntimeException('count phones > ' . $this->massNumber);
+        }
     }
 
     protected function request(string $url, array $param, string $method = 'GET', array $header = []): Response
@@ -125,25 +124,23 @@ class RuanWei extends Connector implements Launch
             return $Response;
         }
 
-        $result = simplexml_load_string($result);
+        $result = json_decode($result, true);
+
         if (!$result) {
             $Response->setErrorNo($result);
             return $Response;
         }
-        $result = (array)$result;
-        $result = $result[0] ?? '';
+
+        if ($status = $result['status'] ?? '') {
+            if ($status !== 0) {
+                $Response->setErrorNo('error code:' . $status);
+            } else {
+                $Response->setResult($result['list']);
+            }
+            return $Response;
+        }
         $Response->setResult($result);
 
-        if ($url == $this->baseUrl . '/balance') {
-            $Response->setSuccess(true);
-        } else {
-            if (substr($result, 0, 1) == '-') {
-                $Response->setSuccess(false);
-                $Response->setErrorNo($result);
-            } else {
-                $Response->setSuccess(true);
-            }
-        }
         return $Response;
     }
 }

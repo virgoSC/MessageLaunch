@@ -28,7 +28,6 @@ class Response
         $this->body = $body;
     }
 
-
     public static function generate($code, $body, $header): Response
     {
         return (new self($code, $body, $header));
@@ -52,6 +51,7 @@ class Response
     public function setResult($result): Response
     {
         $this->result = $result;
+        $this->success =true;
         return $this;
     }
 
@@ -90,6 +90,7 @@ class Response
     public function setErrorNo($errorNo): Response
     {
         $this->errorNo = $errorNo;
+        $this->success = false;
         return $this;
     }
 

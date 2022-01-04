@@ -27,7 +27,6 @@ class Connector extends Config
         }
     }
 
-
     /**
      * 请求
      * @param string $url
@@ -39,12 +38,13 @@ class Connector extends Config
      */
     protected function request(string $url, array $param, string $method = 'GET', array $header = []): Response
     {
+        $options = [];
         $method = strtolower($method);
         if ($method == 'get') {
             $url  .= '?'.http_build_query($param);
+        } else {
+            $options = $this->buildRequestOptions($param, $method, $header);
         }
-
-        $options = $this->buildRequestOptions($param, $method, $header);
 
         $client = new Client();
 

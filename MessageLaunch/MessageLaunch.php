@@ -6,14 +6,10 @@
 
 namespace MessageLaunch;
 
-use MessageLaunch\BaseInterface\Connector;
 use MessageLaunch\BaseInterface\Response;
 
 /**
  * Class MessageLaunch
- * @method Response sends(array $phones, string $message)
- * @method Response sendsPhoneSelf(array $phones)
- * @method Response balance()
  * @package MessageLaunch
  */
 class MessageLaunch
@@ -21,7 +17,7 @@ class MessageLaunch
     /**
      * @var array $instance
      */
-    private $instance;
+    private $instance = [];
 
     /**
      * MessageLaunch constructor
@@ -47,18 +43,73 @@ class MessageLaunch
         $this->instance[$name] = $class;
     }
 
-    public function send(string $phone, string $message, string $instance = '')
+    /**
+     * 单发
+     * @param string $phone
+     * @param string $message
+     * @param string $instance
+     * @param array $extra
+     * @return mixed
+     * @author xis
+     */
+    public function send(string $phone, string $message, string $instanceName = '', array $extra = [])
+    {
+        $instance = $this->getInstance($instanceName);
+
+        return $this->instance[$instance]->send($phone, $message, $extra);
+    }
+
+    /**
+     * 批发
+     * @param array $phones
+     * @param string $message
+     * @param string $instance
+     * @param array $extra
+     * @return mixed
+     * @author xis
+     */
+    public function sends(array $phones, string $message, string $instanceName = '', array $extra = [])
+    {
+        $instance = $this->getInstance($instanceName);
+
+        return $this->instance[$instance]->sends($phones, $message, $extra);
+    }
+
+    /**
+     * 单点发送
+     * @author xis
+     * @param array $phonesContent
+     * @param string $instance
+     * @param array $extra
+     * @return mixed
+     */
+    public function sendsPhoneSelf(array $phonesContent, string $instanceName = '', array $extra = [])
+    {
+        $instance = $this->getInstance($instanceName);
+
+        return $this->instance[$instance]->sendsPhoneSelf($phonesContent, $extra);
+    }
+
+    /**
+     * 余额
+     * @param string $instance
+     * @return mixed
+     * @author xis
+     */
+    public function balance(string $instance = '')
+    {
+        $instance = $this->getInstance($instance);
+
+        return $this->instance[$instance]->balance();
+    }
+
+    private function getInstance(string $instance = '')
     {
         $key = array_keys($this->instance);
 
-        if (!$instance or !key_exists($instance, $key)) {
+        if (!$instance or !in_array($instance, $key)) {
             $instance = $key[0];
         }
-        return $this->instance[$instance]->send($phone, $message);
-    }
-
-    public function __call($method, $param)
-    {
-        return $this->instance->$method(...$param);
+        return $instance;
     }
 }
