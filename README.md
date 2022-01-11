@@ -102,6 +102,7 @@ if (0) {
 
 var_dump($response->getSuccess());
 
+var_dump($response->getReturnId());
 
 var_dump($response->getCode());
 var_dump($response->getBody());
