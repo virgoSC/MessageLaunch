@@ -47,12 +47,12 @@ class MessageLaunch
      * 单发
      * @param string $phone
      * @param string $message
-     * @param string $instance
+     * @param string $instanceName
      * @param array $extra
      * @return mixed
      * @author xis
      */
-    public function send(string $phone, string $message, string $instanceName = '', array $extra = [])
+    public function send(string $phone, string $message, string $instanceName = '', array $extra = []): Response
     {
         $instance = $this->getInstance($instanceName);
 
@@ -63,12 +63,12 @@ class MessageLaunch
      * 批发
      * @param array $phones
      * @param string $message
-     * @param string $instance
+     * @param string $instanceName
      * @param array $extra
      * @return mixed
      * @author xis
      */
-    public function sends(array $phones, string $message, string $instanceName = '', array $extra = [])
+    public function sends(array $phones, string $message, string $instanceName = '', array $extra = []): Response
     {
         $instance = $this->getInstance($instanceName);
 
@@ -77,13 +77,13 @@ class MessageLaunch
 
     /**
      * 单点发送
-     * @author xis
      * @param array $phonesContent
-     * @param string $instance
+     * @param string $instanceName
      * @param array $extra
      * @return mixed
+     * @author xis
      */
-    public function sendsPhoneSelf(array $phonesContent, string $instanceName = '', array $extra = [])
+    public function sendsPhoneSelf(array $phonesContent, string $instanceName = '', array $extra = []): Response
     {
         $instance = $this->getInstance($instanceName);
 
@@ -96,7 +96,7 @@ class MessageLaunch
      * @return mixed
      * @author xis
      */
-    public function balance(string $instance = '')
+    public function balance(string $instance = ''): Response
     {
         $instance = $this->getInstance($instance);
 

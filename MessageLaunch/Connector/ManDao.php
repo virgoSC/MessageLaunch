@@ -26,7 +26,7 @@ class ManDao extends Connector implements Launch
     /**
      * @throws GuzzleException
      */
-    public function send(string $phone, string $message): Response
+    public function send(string $phone, string $message, array $extra = []): Response
     {
         $this->mergeTag($message);
 
@@ -35,7 +35,7 @@ class ManDao extends Connector implements Launch
             'pwd' => strtoupper(md5($this->sn . $this->pwd)),
             'mobile' => $phone,
             'Content' => mb_convert_encoding($this->message, "gb2312", "UTF-8"),
-            'Ext' => $this->Ext,
+            'Ext' => $extra['Ext'] ?? $this->Ext,
             'Stime' => '',
             'Rrid' => ''
         ];
@@ -46,7 +46,7 @@ class ManDao extends Connector implements Launch
     /**
      * @throws GuzzleException
      */
-    public function sends(array $phone, string $message): Response
+    public function sends(array $phone, string $message, array $extra = []): Response
     {
         $this->sendsCheck($phone);
 
@@ -57,7 +57,7 @@ class ManDao extends Connector implements Launch
             'pwd' => strtoupper(md5($this->sn . $this->pwd)),
             'mobile' => implode(',', $phone),
             'Content' => mb_convert_encoding($this->message, "gb2312", "UTF-8"),
-            'Ext' => $this->Ext,
+            'Ext' => $extra['Ext'] ?? $this->Ext,
             'Stime' => '',
             'Rrid' => ''
         ];
@@ -68,7 +68,7 @@ class ManDao extends Connector implements Launch
     /**
      * @throws GuzzleException
      */
-    public function sendsPhoneSelf(array $phones): Response
+    public function sendsPhoneSelf(array $phones, array $extra = []): Response
     {
         $phones = array_map(function ($message) {
             $message = $this->mergeTag($message);
@@ -86,7 +86,7 @@ class ManDao extends Connector implements Launch
             'pwd' => strtoupper(md5($this->sn . $this->pwd)),
             'mobile' => $_phone,
             'Content' => $_content,
-            'Ext' => $this->Ext,
+            'Ext' => $extra['Ext'] ?? $this->Ext,
             'Stime' => '',
             'Rrid' => ''
         ];
@@ -124,14 +124,16 @@ class ManDao extends Connector implements Launch
             return $Response;
         }
 
-        $result = simplexml_load_string($result);
+//        $result = simplexml_load_string($result);
+
         if (!$result) {
             $Response->setErrorNo($result);
             return $Response;
         }
-        $result = (array)$result;
-        $result = $result[0] ?? '';
+        $result = $this->getReturnId($result);
+
         $Response->setResult($result);
+        $Response->setReturnId([$result]);
 
         if ($url == $this->baseUrl . '/balance') {
             $Response->setSuccess(true);
@@ -144,5 +146,15 @@ class ManDao extends Connector implements Launch
             }
         }
         return $Response;
+    }
+
+    private function getReturnId($string):string
+    {
+        preg_match('/<string xmlns="http:\/\/tempuri.org\/">([^<]+)<\/string>/', $string, $matched);
+        if (!$matched) {
+            return '';
+        } else {
+            return  $matched[1];
+        }
     }
 }

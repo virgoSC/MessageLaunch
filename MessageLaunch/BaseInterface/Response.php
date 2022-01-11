@@ -19,6 +19,8 @@ class Response
 
     private $result;
 
+    private $returnId = [];
+
     private $errorNo;
 
     public function __construct($code, $body, $header)
@@ -52,6 +54,12 @@ class Response
     {
         $this->result = $result;
         $this->success =true;
+        return $this;
+    }
+
+    public function setReturnId(array $return): Response
+    {
+        $this->returnId = $return;
         return $this;
     }
 
@@ -92,6 +100,11 @@ class Response
         $this->errorNo = $errorNo;
         $this->success = false;
         return $this;
+    }
+
+    public function getReturnId(): array
+    {
+        return $this->returnId;
     }
 
 }

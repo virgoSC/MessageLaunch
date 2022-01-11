@@ -27,7 +27,7 @@ class JuHeYun extends Connector implements Launch
     /**
      * @throws GuzzleException
      */
-    public function send(string $phone, string $message): Response
+    public function send(string $phone, string $message,array $extra = []): Response
     {
         $this->mergeTag($message);
 
@@ -37,7 +37,7 @@ class JuHeYun extends Connector implements Launch
             'password' => $this->password,
             'mobile' => $phone,
             'content' => $this->message,
-            'extno' => $this->extNo,
+            'extno' => $extra['extno'] ?? $this->extNo,
             'rt' => 'json'
         ];
 
@@ -47,7 +47,7 @@ class JuHeYun extends Connector implements Launch
     /**
      * @throws GuzzleException
      */
-    public function sends(array $phone, string $message): Response
+    public function sends(array $phone, string $message,array $extra = []): Response
     {
         $this->sendsCheck($phone);
 
@@ -59,7 +59,7 @@ class JuHeYun extends Connector implements Launch
             'password' => $this->password,
             'mobile' => implode(',', $phone),
             'content' => $this->message,
-            'extno' => $this->extNo,
+            'extno' => $extra['extno'] ?? $this->extNo,
             'rt' => 'json'
         ];
 
@@ -69,7 +69,7 @@ class JuHeYun extends Connector implements Launch
     /**
      * @throws GuzzleException
      */
-    public function sendsPhoneSelf(array $phones): Response
+    public function sendsPhoneSelf(array $phones,array $extra = []): Response
     {
         $content = [];
 
@@ -87,7 +87,7 @@ class JuHeYun extends Connector implements Launch
             'account' => $this->account,
             'password' => $this->password,
             'mobileContentList' => $content,
-            'extno' => $this->extNo,
+            'extno' => $extra['extno'] ?? $this->extNo,
             'rt' => 'json'
         ];
 

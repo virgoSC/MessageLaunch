@@ -131,11 +131,19 @@ class RuanWei extends Connector implements Launch
             return $Response;
         }
 
-        if ($status = $result['status'] ?? '') {
-            if ($status !== 0) {
+
+        if (isset($result['status'])) {
+            $status = $result['status'] ?? '';
+
+            if ($status !== '0') {
                 $Response->setErrorNo('error code:' . $status);
             } else {
-                $Response->setResult($result['list']);
+                $list = $result['list'] ?? [];
+
+                if ($list) {
+                    $Response->setReturnId(array_column($list,'mid'));
+                }
+                $Response->setResult($list);
             }
             return $Response;
         }
